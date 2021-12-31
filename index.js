@@ -73,6 +73,14 @@ async function run() {
             const result = await reviewCollection.insertOne(newReview);
             res.json(result);
         });
+
+        // GET API : Order filter by email
+        app.get('/orders/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const userOrder = orderCollection.find(query).toArray();
+            res.json(userOrder);
+        });
     }
 
     finally {
