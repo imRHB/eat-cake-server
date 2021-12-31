@@ -23,6 +23,8 @@ async function run() {
 
         // Collection
         const cakeCollection = database.collection('cake');
+        const reviewCollection = database.collection('reviews');
+        const orderCollection = database.collection('orders');
 
         // const cake = {
         //     name: 'Cream Cake 8',
@@ -43,6 +45,32 @@ async function run() {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await cakeCollection.findOne(query);
+            res.json(result);
+        });
+
+        // GET API : Reviews
+        app.get('/reviews', async (req, res) => {
+            const reviews = await reviewCollection.find({}).toArray();
+            res.json(reviews);
+        });
+
+        // POST API : Cake Order
+        app.post('/orders', async (req, res) => {
+            const orderedCake = req.body;
+            const result = await orderCollection.insertOne(orderedCake);
+            res.json(result);
+        });
+
+        // GET API : All Order
+        app.get('/orders', async (req, res) => {
+            const orders = await orderCollection.find({}).toArray();
+            res.json(orders);
+        });
+
+        // POST API : Add Review
+        app.post('/add-review', async (req, res) => {
+            const newReview = req.body;
+            const result = await reviewCollection.insertOne(newReview);
             res.json(result);
         });
     }
