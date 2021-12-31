@@ -78,8 +78,17 @@ async function run() {
         app.get('/orders/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email: email };
-            const userOrder = orderCollection.find(query).toArray();
-            res.json(userOrder);
+            const userOrder = orderCollection.find(query);
+            const result = await userOrder.toArray();
+            res.json(result);
+        });
+
+        // DELETE API : Order
+        app.delete('/orders/:cakeId', async (req, res) => {
+            const cakeId = req.params.cakeId;
+            const query = { _id: cakeId };
+            const result = await orderCollection.deleteOne(query);
+            res.json(result);
         });
     }
 
