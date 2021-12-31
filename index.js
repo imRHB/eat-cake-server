@@ -90,6 +90,19 @@ async function run() {
             const result = await orderCollection.deleteOne(query);
             res.json(result);
         });
+
+        // PUT API : Order Status
+        app.put('/orders/:cakeId', async (req, res) => {
+            const filter = { status: 'Pending' };
+            const updateStatus = {
+                $set: {
+                    status: 'Delivered'
+                }
+            };
+            const result = await orderCollection.updateOne(filter, updateStatus);
+            console.log(result);
+            res.json(result);
+        });
     }
 
     finally {
