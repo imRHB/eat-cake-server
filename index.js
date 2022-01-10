@@ -25,19 +25,20 @@ async function run() {
         const cakeCollection = database.collection('cake');
         const reviewCollection = database.collection('reviews');
         const orderCollection = database.collection('orders');
+        const userCollection = database.collection('users');
 
-        // const cake = {
-        //     name: 'Cream Cake 8',
-        //     price: 100
-        // };
-
-        // const result = await cakeCollection.insertOne(cake);
-        // console.log(result);
 
         // GET API : Cakes
         app.get('/cake', async (req, res) => {
             const cake = await cakeCollection.find({}).toArray();
             res.json(cake);
+        });
+
+        // POST API : Cake
+        app.post('/cake', async (req, res) => {
+            const newCake = req.body;
+            const result = cakeCollection.insertOne(newCake);
+            res.json(result);
         });
 
         // GET API : Single Cake
@@ -83,6 +84,71 @@ async function run() {
             res.json(result);
         });
 
+        // GET API : Cake by flavor
+        app.get('/flavor/:flavor', async (req, res) => {
+            const flavor = req.params.flavor;
+            const query = { flavor: flavor };
+            const cakeFlavor = cakeCollection.find(query);
+            const result = await cakeFlavor.toArray();
+            res.json(result);
+            console.log(result);
+        });
+
+        // POST API : User
+        app.post('/users', async (req, res) => {
+            const newUser = req.body;
+            const result = userCollection.insertOne(newUser);
+            res.json(result);
+        });
+
+        // PUT API : User
+        app.put('/users', async (req, res) => {
+            const user = req.body;
+            const filter = { email: user.email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    role: 'user'
+                }
+            };
+            const result = await userCollection.updateOne(filter, updateDoc, options);
+            res.json(result);
+        });
+
+        // PUT API : Set admin role
+        app.put('/users/admin', async (req, res) => {
+            const user = req.body;
+            const filter = { email: user.email };
+            const updateDoc = {
+                $set: {
+                    role: 'admin'
+                }
+            };
+            const result = await userCollection.updateOne(filter, updateDoc);
+            res.json(result);
+        });
+
+        // GET API : Admin role
+        app.get('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await userCollection.findOne(query);
+            let isAdmin = false;
+            if (user?.role === 'admin') {
+                isAdmin = true;
+            }
+            res.json({ admin: isAdmin });
+        });
+
+        // DELETE API : Cake
+        app.delete('/cake/:cakeId', async (req, res) => {
+            const cakeId = req.params.cakeId;
+            const query = { _id: ObjectId(cakeId) };
+            const result = await cakeCollection.deleteOne(query);
+            res.json(result);
+            console.log(result);
+        });
+
         // DELETE API : Order
         app.delete('/orders/:cakeId', async (req, res) => {
             const cakeId = req.params.cakeId;
@@ -93,7 +159,8 @@ async function run() {
 
         // PUT API : Order Status
         app.put('/orders/:cakeId', async (req, res) => {
-            const filter = { status: 'Pending' };
+            const cakeId = req.params.cakeId;
+            const filter = { _id: ObjectId(cakeId) };
             const updateStatus = {
                 $set: {
                     status: 'Delivered'
