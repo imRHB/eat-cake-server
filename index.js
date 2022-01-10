@@ -102,19 +102,20 @@ async function run() {
         });
 
         // PUT API : User
-        /* app.put('/users', async (req, res) => {
+        app.put('/users', async (req, res) => {
             const user = req.body;
             console.log(user);
             const filter = { email: user.email };
             const options = { upsert: true };
             const updateDoc = {
                 $set: {
-                    role: 'user'
+                    name: user.name,
+                    email: user.email
                 }
             };
             const result = await userCollection.updateOne(filter, updateDoc, options);
             res.json(result);
-        }); */
+        });
 
         // PUT API : Set admin role
         app.put('/users/admin', async (req, res) => {
