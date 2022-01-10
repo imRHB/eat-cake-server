@@ -96,7 +96,6 @@ async function run() {
         // POST API : User
         app.post('/users', async (req, res) => {
             const newUser = req.body;
-            console.log(newUser);
             const result = userCollection.insertOne(newUser);
             res.json(result);
         });
@@ -104,7 +103,6 @@ async function run() {
         // PUT API : User
         app.put('/users', async (req, res) => {
             const user = req.body;
-            console.log(user);
             const filter = { email: user.email };
             const options = { upsert: true };
             const updateDoc = {
@@ -127,6 +125,19 @@ async function run() {
                 }
             };
             const result = await userCollection.updateOne(filter, updateDoc);
+            res.json(result);
+        });
+
+        // PUT API : Order status
+        app.put('/orders', async (req, res) => {
+            const order = req.body;
+            const filter = { _id: ObjectId(order) };
+            const updateStatus = {
+                $set: {
+                    status: 'Shipped'
+                }
+            };
+            const result = await orderCollection.updateOne(filter, updateStatus);
             res.json(result);
         });
 
