@@ -91,19 +91,20 @@ async function run() {
             const cakeFlavor = cakeCollection.find(query);
             const result = await cakeFlavor.toArray();
             res.json(result);
-            console.log(result);
         });
 
         // POST API : User
         app.post('/users', async (req, res) => {
             const newUser = req.body;
+            console.log(newUser);
             const result = userCollection.insertOne(newUser);
             res.json(result);
         });
 
         // PUT API : User
-        app.put('/users', async (req, res) => {
+        /* app.put('/users', async (req, res) => {
             const user = req.body;
+            console.log(user);
             const filter = { email: user.email };
             const options = { upsert: true };
             const updateDoc = {
@@ -113,7 +114,7 @@ async function run() {
             };
             const result = await userCollection.updateOne(filter, updateDoc, options);
             res.json(result);
-        });
+        }); */
 
         // PUT API : Set admin role
         app.put('/users/admin', async (req, res) => {
@@ -146,7 +147,6 @@ async function run() {
             const query = { _id: ObjectId(cakeId) };
             const result = await cakeCollection.deleteOne(query);
             res.json(result);
-            console.log(result);
         });
 
         // DELETE API : Order
@@ -167,7 +167,6 @@ async function run() {
                 }
             };
             const result = await orderCollection.updateOne(filter, updateStatus);
-            console.log(result);
             res.json(result);
         });
     }
