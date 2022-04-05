@@ -23,6 +23,7 @@ async function run() {
 
         // Collection
         const cakeCollection = database.collection('cake');
+        const blogCollection = database.collection('blogs');
         const reviewCollection = database.collection('reviews');
         const orderCollection = database.collection('orders');
         const userCollection = database.collection('users');
@@ -48,6 +49,25 @@ async function run() {
             const result = await cakeCollection.findOne(query);
             res.json(result);
         });
+
+        // GET API : Blogs
+        app.get('/blogs', async (req, res) => {
+            const blogs = await blogCollection.find({}).toArray();
+            res.json(blogs);
+        });
+
+        // GET API : Single Blog
+        app.get('/blogs/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await blogCollection.findOne(query);
+            res.json(result);
+        });
+
+        // POST API : Blogs
+
+
+        // DELETE API : Blogs
 
         // GET API : Reviews
         app.get('/reviews', async (req, res) => {
@@ -129,7 +149,7 @@ async function run() {
         });
 
         // PUT API : Order status
-        app.put('/orders', async (req, res) => {
+        /* app.put('/orders', async (req, res) => {
             const order = req.body;
             const filter = { _id: ObjectId(order) };
             const updateStatus = {
@@ -139,7 +159,7 @@ async function run() {
             };
             const result = await orderCollection.updateOne(filter, updateStatus);
             res.json(result);
-        });
+        }); */
 
         // GET API : Admin role
         app.get('/users/:email', async (req, res) => {
@@ -169,13 +189,22 @@ async function run() {
             res.json(result);
         });
 
+        // GET API : Single Order
+        app.get('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const query = { _id: ObjectId(id) };
+            const result = await orderCollection.findOne(query);
+            res.json(result);
+        });
+
         // PUT API : Order Status
         app.put('/orders/:cakeId', async (req, res) => {
             const cakeId = req.params.cakeId;
             const filter = { _id: ObjectId(cakeId) };
             const updateStatus = {
                 $set: {
-                    status: 'Delivered'
+                    status: req.body.status
                 }
             };
             const result = await orderCollection.updateOne(filter, updateStatus);
@@ -191,7 +220,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get('/', (req, res) => {
-    res.send('Eat Cake server is runnung');
+    res.send('<h1>Eat Cake server is running ...</h1>');
 });
 
 app.listen(port, (req, res) => {
